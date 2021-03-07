@@ -9,6 +9,9 @@
     "declarationMap": true,
     "sourceMap": true,
     "strict": true,
-    "preserveWatchOutput": true
+    "preserveWatchOutput": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   }
 }
