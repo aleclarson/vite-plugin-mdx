@@ -1,6 +1,7 @@
 import { createTransformer, stopService } from './transform'
 import { MdxOptions, MdxPlugin } from './types'
 import { viteMdxTransclusion } from './viteMdxTransclusion'
+import { getViteRemark } from './viteRemark'
 import { NamedImports } from './imports'
 import { mergeArrays } from './common'
 
@@ -37,11 +38,14 @@ function createPlugin(
     mdxOptions: globalMdxOptions,
     configResolved({ root, plugins }) {
       const reactRefresh = plugins.find((p) => p.name === 'react-refresh')
+      const viteRemark = getViteRemark(plugins)
       const transform = createTransformer(root, namedImports)
 
       this.transform = async function (code, id, ssr) {
         if (/\.mdx?$/.test(id)) {
           const mdxOptions = mergeOptions(globalMdxOptions, getMdxOptions?.(id))
+          mdxOptions.remarkPlugins.unshift(viteRemark.pre)
+          mdxOptions.remarkPlugins.push(viteRemark.post)
           mdxOptions.filepath = id
 
           code = await transform(code, mdxOptions)
